@@ -61,7 +61,7 @@ can_hit = True
 pygame.font.init()
 myfont = pygame.font.SysFont('Arial', 80)
 
-the_way = 7
+the_way = 9
 
 # -------- Main Program Loop -----------
 while not done:
@@ -75,13 +75,13 @@ while not done:
             if event.key == pygame.K_SPACE:
                 game_start = True
             elif event.key == pygame.K_w and game_start:
-                player_2_speed.y -= 8
+                player_2_speed.y -= 10
             elif event.key == pygame.K_s and game_start:
-                player_2_speed.y += 8
+                player_2_speed.y += 10
             elif event.key == pygame.K_UP and game_start:
-                player_1_speed.y -= 8
+                player_1_speed.y -= 10
             elif event.key == pygame.K_DOWN and game_start:
-                player_1_speed.y += 8
+                player_1_speed.y += 10
 
         elif event.type == pygame.KEYUP:
             if event.key == pygame.K_w:
@@ -163,7 +163,7 @@ while not done:
         player_1.position = Vector2(990, 310)
         player_2.position = Vector2(200, 310)
         player_2_points += 1
-        the_way = 7
+        the_way = 9
 
     elif ball.position.x <= -10:
         game_start = False
@@ -174,7 +174,7 @@ while not done:
         player_1.position = Vector2(990, 310)
         player_2.position = Vector2(200, 310)
         player_1_points += 1
-        the_way = -7
+        the_way = -9
 
     if pygame.sprite.collide_rect(ball, upper_wall):
         (r,phi) = ball_speed.as_polar()
@@ -188,19 +188,19 @@ while not done:
 
     elif pygame.sprite.collide_rect(ball, right_lower_wall):
         COLOR = (random.randint(0,255), random.randint(0,255), random.randint(0,255))
-        ball_speed.x = -5
+        ball_speed.x = -9
 
     elif pygame.sprite.collide_rect(ball, right_upper_wall):
         COLOR = (random.randint(0,255), random.randint(0,255), random.randint(0,255))
-        ball_speed.x = -5
+        ball_speed.x = -9
 
     elif pygame.sprite.collide_rect(ball, left_lower_wall):
         COLOR = (random.randint(0,255), random.randint(0,255), random.randint(0,255))
-        ball_speed.x = 5
+        ball_speed.x = 9
 
     elif pygame.sprite.collide_rect(ball, left_upper_wall):
         COLOR = (random.randint(0,255), random.randint(0,255), random.randint(0,255))
-        ball_speed.x = 5
+        ball_speed.x = 9
 
     elif pygame.sprite.collide_rect(ball, power_up) and player_1_p_up:
         random_power_up = random.randint(1,2)
