@@ -27,9 +27,9 @@ player_2_points = 0
 upper_wall = pong_objects.Wall(Vector2(0,0))
 lower_wall = pong_objects.Wall(Vector2(0,699))
 right_upper_wall = pong_objects.Side_Wall(Vector2(1193,0))
-right_lower_wall = pong_objects.Side_Wall(Vector2(1193,525))
+right_lower_wall = pong_objects.Side_Wall(Vector2(1193,575))
 left_upper_wall = pong_objects.Side_Wall(Vector2(0,0))
-left_lower_wall = pong_objects.Side_Wall(Vector2(0,525))
+left_lower_wall = pong_objects.Side_Wall(Vector2(0,575))
 
 wall_sprites = pygame.sprite.Group()
 
@@ -133,7 +133,7 @@ while not done:
 
     if can_hit:
         if pygame.sprite.collide_rect(ball, player_1):
-            pygame.time.set_timer(HIT_TIMER, 200)
+            pygame.time.set_timer(HIT_TIMER, 350)
             can_hit = False
             print (-230*(ball.rect.y - player_1.rect.centery) / 120)
             if ball.rect.y > player_1.rect.centery:
@@ -147,13 +147,18 @@ while not done:
                 player_2_p_up = False
     if can_hit:
         if pygame.sprite.collide_rect(ball, player_2):
-            pygame.time.set_timer(HIT_TIMER, 200)
-            can_hit = False
-            (r,phi) = ball_speed.as_polar()
-            ball_speed.from_polar((r,180-phi))
-            COLOR = (random.randint(0,255), random.randint(0,255), random.randint(0,255))
-            player_2_p_up = True
-            player_1_p_up = False
+                pygame.time.set_timer(HIT_TIMER, 350)
+                can_hit = False
+                if ball.rect.y > player_2.rect.centery:
+                    ball.speed.x = - ball.speed.x
+                    (r,phi) = ball.speed.as_polar()
+                    ball.speed.from_polar((r,phi + 230 * (ball.rect.y - player_2.rect.centery) / 120))
+                else:
+                    ball_speed.from_polar((r,180-phi + 130 * (ball.rect.y - player_2.rect.centery) / 120))
+                    COLOR = (random.randint(0,255), random.randint(0,255), random.randint(0,255))
+                    player_2_p_up = True
+                    player_1_p_up = False
+
     if ball.position.x >= 1190:
         game_start = False
         ball.position = (590, 340)
@@ -218,7 +223,7 @@ while not done:
     player_2_points_text = myfont.render(str(player_2_points), False, (255, 255, 255))
     screen.blit(player_1_points_text, (620,20))
     screen.blit(player_2_points_text, (20,20))
-    screen.blit(angle, (430,200))
+    #screen.blit(angle, (430,200))
     #Update screen
     pygame.display.flip()
     clock.tick(60)

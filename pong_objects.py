@@ -61,7 +61,7 @@ class Side_Wall(pygame.sprite.Sprite):
         self.speed = Vector2(0,0)
 
         self.image = pygame.image.load('spiller.jpg')
-        self.image = pygame.transform.scale(self.image, (7,175))
+        self.image = pygame.transform.scale(self.image, (7,125))
         self.rect = self.image.get_rect()
         self.rect.x = self.position.x
         self.rect.y = self.position.y
