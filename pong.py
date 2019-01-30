@@ -136,15 +136,26 @@ while not done:
             pygame.time.set_timer(HIT_TIMER, 350)
             can_hit = False
             from_center = abs(ball.rect.y - player_1.rect.centery)
-            ball.speed.x = -ball.speed.x
             (r,phi) = ball.speed.as_polar()
-            if ball.rect.y > player_1.rect.centery:
-                phi = phi - 230 * from_center / 120
-                phi = max(phi,125.0)
-            else:
-                phi = phi + (230 / 120) * from_center
-                phi = min(phi,235.0)
-                print (min(phi,235.0))
+            if ball.speed.x < 0:
+                if from_center < 0:
+                    phi = 180 - from_center
+                else:
+                    phi = 180 + from_center
+            if ball.speed.x > 0:
+                ball.speed.x = -abs(ball.speed.x)
+                if ball.rect.y > player_1.rect.centery:
+                    phi = 180 + phi - (230 / 180) * abs(from_center)
+                    print (phi)
+                    if phi < 125.0:
+                        print('working')
+                        phi = 125.0
+                else:
+                    phi = 180 + phi + (230 / 180) * abs(from_center)
+                    print (phi)
+                    if phi > 235.0:
+                        print('working')
+                        phi = -125.0
             ball.speed.from_polar((r,phi))
 
             COLOR = (random.randint(0,255), random.randint(0,255), random.randint(0,255))
