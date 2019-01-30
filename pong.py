@@ -61,7 +61,7 @@ can_hit = True
 pygame.font.init()
 myfont = pygame.font.SysFont('Arial', 80)
 
-the_way = 9
+the_way = 11
 
 # -------- Main Program Loop -----------
 while not done:
@@ -135,16 +135,22 @@ while not done:
         if pygame.sprite.collide_rect(ball, player_1):
             pygame.time.set_timer(HIT_TIMER, 350)
             can_hit = False
-            print (-230*(ball.rect.y - player_1.rect.centery) / 120)
+            from_center = abs(ball.rect.y - player_1.rect.centery)
+            ball.speed.x = -ball.speed.x
+            (r,phi) = ball.speed.as_polar()
             if ball.rect.y > player_1.rect.centery:
-                ball.speed.x = - ball.speed.x
-                (r,phi) = ball.speed.as_polar()
-                ball.speed.from_polar((r,phi - 230 * (ball.rect.y - player_1.rect.centery) / 120))
+                phi = phi - 230 * from_center / 120
+                phi = max(phi,125.0)
             else:
-                ball_speed.from_polar((r,180-phi - 130 * (ball.rect.y - player_1.rect.centery) / 120))
-                COLOR = (random.randint(0,255), random.randint(0,255), random.randint(0,255))
-                player_1_p_up = True
-                player_2_p_up = False
+                phi = phi + (230 / 120) * from_center
+                phi = min(phi,235.0)
+                print (min(phi,235.0))
+            ball.speed.from_polar((r,phi))
+
+            COLOR = (random.randint(0,255), random.randint(0,255), random.randint(0,255))
+            player_1_p_up = True
+            player_2_p_up = False
+
     if can_hit:
         if pygame.sprite.collide_rect(ball, player_2):
                 pygame.time.set_timer(HIT_TIMER, 350)
@@ -168,7 +174,7 @@ while not done:
         player_1.position = Vector2(990, 310)
         player_2.position = Vector2(200, 310)
         player_2_points += 1
-        the_way = 9
+        the_way = 11
 
     elif ball.position.x <= -10:
         game_start = False
@@ -179,7 +185,7 @@ while not done:
         player_1.position = Vector2(990, 310)
         player_2.position = Vector2(200, 310)
         player_1_points += 1
-        the_way = -9
+        the_way = -11
 
     if pygame.sprite.collide_rect(ball, upper_wall):
         (r,phi) = ball_speed.as_polar()
@@ -193,19 +199,19 @@ while not done:
 
     elif pygame.sprite.collide_rect(ball, right_lower_wall):
         COLOR = (random.randint(0,255), random.randint(0,255), random.randint(0,255))
-        ball_speed.x = -9
+        ball_speed.x = -11
 
     elif pygame.sprite.collide_rect(ball, right_upper_wall):
         COLOR = (random.randint(0,255), random.randint(0,255), random.randint(0,255))
-        ball_speed.x = -9
+        ball_speed.x = -11
 
     elif pygame.sprite.collide_rect(ball, left_lower_wall):
         COLOR = (random.randint(0,255), random.randint(0,255), random.randint(0,255))
-        ball_speed.x = 9
+        ball_speed.x = 11
 
     elif pygame.sprite.collide_rect(ball, left_upper_wall):
         COLOR = (random.randint(0,255), random.randint(0,255), random.randint(0,255))
-        ball_speed.x = 9
+        ball_speed.x = 11
 
     elif pygame.sprite.collide_rect(ball, power_up) and player_1_p_up:
         random_power_up = random.randint(1,2)
@@ -223,7 +229,7 @@ while not done:
     player_2_points_text = myfont.render(str(player_2_points), False, (255, 255, 255))
     screen.blit(player_1_points_text, (620,20))
     screen.blit(player_2_points_text, (20,20))
-    #screen.blit(angle, (430,200))
+    screen.blit(angle, (430,200))
     #Update screen
     pygame.display.flip()
     clock.tick(60)
