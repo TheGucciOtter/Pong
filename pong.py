@@ -2,6 +2,7 @@ import pygame
 import pong_objects
 from pygame.math import Vector2
 import random
+import pong_util
 # Setup
 pygame.init()
 done = False
@@ -61,7 +62,7 @@ can_hit = True
 pygame.font.init()
 myfont = pygame.font.SysFont('Arial', 80)
 
-the_way = 11
+the_way = 10
 
 # -------- Main Program Loop -----------
 while not done:
@@ -135,46 +136,23 @@ while not done:
         if pygame.sprite.collide_rect(ball, player_1):
             pygame.time.set_timer(HIT_TIMER, 350)
             can_hit = False
-            from_center = abs(ball.rect.y - player_1.rect.centery)
             (r,phi) = ball.speed.as_polar()
-            if ball.speed.x < 0:
-                if from_center < 0:
-                    phi = 180 - from_center
-                else:
-                    phi = 180 + from_center
-            if ball.speed.x > 0:
-                ball.speed.x = -abs(ball.speed.x)
-                if ball.rect.y > player_1.rect.centery:
-                    phi = 180 + phi - (230 / 180) * abs(from_center)
-                    print (phi)
-                    if phi < 125.0:
-                        print('working')
-                        phi = 125.0
-                else:
-                    phi = 180 + phi + (230 / 180) * abs(from_center)
-                    print (phi)
-                    if phi > 235.0:
-                        print('working')
-                        phi = -125.0
-            ball.speed.from_polar((r,phi))
-
+            phi = pong_util.new_angle1(phi,ball.speed.x,ball.rect.y,player_1.rect.centery)
             COLOR = (random.randint(0,255), random.randint(0,255), random.randint(0,255))
             player_1_p_up = True
             player_2_p_up = False
+            ball.speed.from_polar((r,phi))
 
     if can_hit:
         if pygame.sprite.collide_rect(ball, player_2):
-                pygame.time.set_timer(HIT_TIMER, 350)
-                can_hit = False
-                if ball.rect.y > player_2.rect.centery:
-                    ball.speed.x = - ball.speed.x
-                    (r,phi) = ball.speed.as_polar()
-                    ball.speed.from_polar((r,phi + 230 * (ball.rect.y - player_2.rect.centery) / 120))
-                else:
-                    ball_speed.from_polar((r,180-phi + 130 * (ball.rect.y - player_2.rect.centery) / 120))
-                    COLOR = (random.randint(0,255), random.randint(0,255), random.randint(0,255))
-                    player_2_p_up = True
-                    player_1_p_up = False
+            pygame.time.set_timer(HIT_TIMER, 350)
+            can_hit = False
+            (r,phi) = ball.speed.as_polar()
+            phi = pong_util.new_angle2(phi,ball.speed.x,ball.rect.y,player_2.rect.centery)
+            ball.speed.from_polar((r,phi))
+            COLOR = (random.randint(0,255), random.randint(0,255), random.randint(0,255))
+            player_2_p_up = True
+            player_1_p_up = False
 
     if ball.position.x >= 1190:
         game_start = False
@@ -185,7 +163,7 @@ while not done:
         player_1.position = Vector2(990, 310)
         player_2.position = Vector2(200, 310)
         player_2_points += 1
-        the_way = 11
+        the_way = 10
 
     elif ball.position.x <= -10:
         game_start = False
@@ -196,7 +174,7 @@ while not done:
         player_1.position = Vector2(990, 310)
         player_2.position = Vector2(200, 310)
         player_1_points += 1
-        the_way = -11
+        the_way = -10
 
     if pygame.sprite.collide_rect(ball, upper_wall):
         (r,phi) = ball_speed.as_polar()
@@ -210,19 +188,19 @@ while not done:
 
     elif pygame.sprite.collide_rect(ball, right_lower_wall):
         COLOR = (random.randint(0,255), random.randint(0,255), random.randint(0,255))
-        ball_speed.x = -11
+        ball_speed.x = -10
 
     elif pygame.sprite.collide_rect(ball, right_upper_wall):
         COLOR = (random.randint(0,255), random.randint(0,255), random.randint(0,255))
-        ball_speed.x = -11
+        ball_speed.x = -10
 
     elif pygame.sprite.collide_rect(ball, left_lower_wall):
         COLOR = (random.randint(0,255), random.randint(0,255), random.randint(0,255))
-        ball_speed.x = 11
+        ball_speed.x = 10
 
     elif pygame.sprite.collide_rect(ball, left_upper_wall):
         COLOR = (random.randint(0,255), random.randint(0,255), random.randint(0,255))
-        ball_speed.x = 11
+        ball_speed.x = 10
 
     elif pygame.sprite.collide_rect(ball, power_up) and player_1_p_up:
         random_power_up = random.randint(1,2)
