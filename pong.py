@@ -59,8 +59,12 @@ all_power_ups.add(power_up)
 player_1_p_up = False
 player_2_p_up = False
 
+p1_speed_value = 10
+p2_speed_value = 10
+
 POWER_UP_TIMER = pygame.USEREVENT+0
 HIT_TIMER = pygame.USEREVENT+1
+POWER_UP_STOP_TIMER = pygame.USEREVENT+2
 can_hit = True
 
 pygame.font.init()
@@ -80,13 +84,13 @@ while not done:
             if event.key == pygame.K_SPACE:
                 game_start = True
             elif event.key == pygame.K_w and game_start:
-                player_2_speed.y -= 10
+                player_2_speed.y -= p2_speed_value
             elif event.key == pygame.K_s and game_start:
-                player_2_speed.y += 10
+                player_2_speed.y += p2_speed_value
             elif event.key == pygame.K_UP and game_start:
-                player_1_speed.y -= 10
+                player_1_speed.y -= p1_speed_value
             elif event.key == pygame.K_DOWN and game_start:
-                player_1_speed.y += 10
+                player_1_speed.y += p1_speed_value
 
 
         elif event.type == pygame.KEYUP:
@@ -106,6 +110,10 @@ while not done:
         elif event.type == HIT_TIMER:
             can_hit = True
             pygame.time.set_timer(HIT_TIMER, 0)
+        elif event.type == POWER_UP_STOP_TIMER:
+            pygame.time.set_timer(POWER_UP_STOP_TIMER, 0)
+            p1_speed_value = 10
+            p2_speed_value = 10
 
 
     player_1.speed = player_1_speed
@@ -206,13 +214,20 @@ while not done:
     elif pygame.sprite.collide_rect(ball, power_up):
         power_up.rect = (-100,-100, 30, 30)
         power_up.kill()
-        random_power_up = random.randint(1,1)
+        random_power_up = random.randint(1,2)
         pygame.time.set_timer(POWER_UP_TIMER, random.randint(3,15) * 1000)
         if random_power_up == 1:
             if player_1_p_up:
                 ball.owner = pong_objects.PLAYER1
             elif player_2_p_up:
                 ball.owner = pong_objects.PLAYER2
+        if random_power_up == 2:
+            pygame.time.set_timer(POWER_UP_STOP_TIMER, 10000)
+            if player_1_p_up:
+                p2_speed_value = -10
+            elif player_2_p_up:
+                p1_speed_value = -10
+
 
     (r,phi) = ball.speed.as_polar()
     angle = myfont.render(str((phi)), False, (255, 255, 255))
