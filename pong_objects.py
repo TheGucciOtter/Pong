@@ -51,6 +51,8 @@ class Ball(pygame.sprite.Sprite):
                 self.image.fill((0,0,0))
             elif self.rect.x < self.x_mid and self.owner == PLAYER1:
                 self.image.fill((0,0,0))
+        if self.owner == NEUTRAL:
+            self.image.fill((255,255,255))
 
     def color(self, color):
         self.image.fill(color)

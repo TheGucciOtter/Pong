@@ -119,6 +119,7 @@ while not done:
         ball_speed.y = random_ball_speed_y
         ball.owner = pong_objects.NEUTRAL
 
+
     screen.fill((0,0,0))
     pygame.draw.line(screen, (255,255,255), (600,0),(600,700), 10)
 
@@ -188,6 +189,7 @@ while not done:
         player_2.position = Vector2(200, 310)
         player_2_points += 1
         the_way = 10
+        ball.owner = pong_objects.NEUTRAL
 
     elif pygame.sprite.collide_rect(ball, left_goal):
         game_start = False
@@ -199,6 +201,7 @@ while not done:
         player_2.position = Vector2(200, 310)
         player_1_points += 1
         the_way = -10
+        ball.owner = pong_objects.NEUTRAL
 
     elif pygame.sprite.collide_rect(ball, power_up):
         power_up.rect = (-100,-100, 30, 30)
