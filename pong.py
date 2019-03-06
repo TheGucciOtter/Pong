@@ -62,13 +62,25 @@ player_2_p_up = False
 p1_speed_value = 10
 p2_speed_value = 10
 
+p1_reverse_indicator = 'Not Active'
+p2_reverse_indicator = 'Not Active'
+p1_invisible_indicator = 'Not Active'
+p2_invisible_indicator = 'Not Active'
+
+p1_reverse_indicator_color = (255,0,0)
+p2_reverse_indicator_color = (255,0,0)
+p1_invisible_indicator_color = (255,0,0)
+p2_invisible_indicator_color = (255,0,0)
+
 POWER_UP_TIMER = pygame.USEREVENT+0
 HIT_TIMER = pygame.USEREVENT+1
-POWER_UP_STOP_TIMER = pygame.USEREVENT+2
+P1_POWER_UP_STOP_TIMER = pygame.USEREVENT+2
+P2_POWER_UP_STOP_TIMER = pygame.USEREVENT+3
 can_hit = True
 
 pygame.font.init()
-myfont = pygame.font.SysFont('Arial', 80)
+pointfond = pygame.font.SysFont('Arial', 80)
+power_up_fond = pygame.font.SysFont('Arial', 20)
 
 the_way = 10
 
@@ -110,11 +122,16 @@ while not done:
         elif event.type == HIT_TIMER:
             can_hit = True
             pygame.time.set_timer(HIT_TIMER, 0)
-        elif event.type == POWER_UP_STOP_TIMER:
-            pygame.time.set_timer(POWER_UP_STOP_TIMER, 0)
-            p1_speed_value = 10
+        elif event.type == P1_POWER_UP_STOP_TIMER:
+            pygame.time.set_timer(P1_POWER_UP_STOP_TIMER, 0)
             p2_speed_value = 10
-
+            p1_reverse_indicator = 'Not Active'
+            p1_reverse_indicator_color = (255,0,0)
+        elif event.type == P2_POWER_UP_STOP_TIMER:
+            pygame.time.set_timer(P2_POWER_UP_STOP_TIMER, 0)
+            p1_speed_value = 10
+            p2_reverse_indicator = 'Not Active'
+            p2_reverse_indicator_color = (255,0,0)
 
     player_1.speed = player_1_speed
     player_2.speed = player_2_speed
@@ -126,7 +143,10 @@ while not done:
         random_ball_speed_y = random.randint(-5,5)
         ball_speed.y = random_ball_speed_y
         ball.owner = pong_objects.NEUTRAL
-
+        p1_invisible_indicator = 'Not Active'
+        p2_invisible_indicator = 'Not Active'
+        p1_invisible_indicator_color = (255,0,0)
+        p2_invisible_indicator_color = (255,0,0)
 
     screen.fill((0,0,0))
     pygame.draw.line(screen, (255,255,255), (600,0),(600,700), 10)
@@ -219,22 +239,55 @@ while not done:
         if random_power_up == 1:
             if player_1_p_up:
                 ball.owner = pong_objects.PLAYER1
+                p1_invisible_indicator = 'Active'
+                p1_invisible_indicator_color = (127,255,0)
             elif player_2_p_up:
                 ball.owner = pong_objects.PLAYER2
+                p2_invisible_indicator = 'Active'
+                p2_invisible_indicator_color = (127,255,0)
         if random_power_up == 2:
-            pygame.time.set_timer(POWER_UP_STOP_TIMER, 10000)
             if player_1_p_up:
+                pygame.time.set_timer(P1_POWER_UP_STOP_TIMER, 10000)
                 p2_speed_value = -10
+                p1_reverse_indicator = 'Active'
+                p1_reverse_indicator_color = (127,255,0)
             elif player_2_p_up:
+                pygame.time.set_timer(P2_POWER_UP_STOP_TIMER, 10000)
                 p1_speed_value = -10
-
+                p2_reverse_indicator = 'Active'
+                p2_reverse_indicator_color = (127,255,0)
 
     (r,phi) = ball.speed.as_polar()
-    angle = myfont.render(str((phi)), False, (255, 255, 255))
-    player_1_points_text = myfont.render(str(player_1_points), False, (255, 255, 255))
-    player_2_points_text = myfont.render(str(player_2_points), False, (255, 255, 255))
+
+#    angle = pointfond.render(str((phi)), False, (255, 255, 255))
+
+    player_1_reverse_text = power_up_fond.render(str('Enemy Reverse Control: '), False, (255,255,255))
+    player_2_reverse_text = power_up_fond.render(str('Enemy Reverse Control: '), False, (255,255,255))
+
+    player_1_invisible_text = power_up_fond.render(str('Enemy Invisible Ball Control: '), False, (255,255,255))
+    player_2_invisible_text = power_up_fond.render(str('Enemy Invisible Ball Control: '), False, (255,255,255))
+
+    player_1_points_text = pointfond.render(str(player_1_points), False, (255, 255, 255))
+    player_2_points_text = pointfond.render(str(player_2_points), False, (255, 255, 255))
+
+    p1_reverse_active_text = power_up_fond.render((p1_reverse_indicator), False, (p1_reverse_indicator_color))
+    p2_reverse_active_text = power_up_fond.render((p2_reverse_indicator), False, (p2_reverse_indicator_color))
+    p1_invisible_active_text = power_up_fond.render((p1_invisible_indicator), False, (p1_invisible_indicator_color))
+    p2_invisible_active_text = power_up_fond.render((p2_invisible_indicator), False, (p1_invisible_indicator_color))
+
     screen.blit(player_1_points_text, (620,20))
     screen.blit(player_2_points_text, (20,20))
+
+    screen.blit(player_1_reverse_text, (620,620))
+    screen.blit(player_2_reverse_text, (20,620))
+
+    screen.blit(player_1_invisible_text, (620,645))
+    screen.blit(player_2_invisible_text, (20,645))
+
+    screen.blit(p1_reverse_active_text, (875,620))
+    screen.blit(p2_reverse_active_text, (275,620))
+    screen.blit(p1_invisible_active_text, (875,645))
+    screen.blit(p2_invisible_active_text, (275,645))
     #screen.blit(angle, (430,200))
     #Update screen
     pygame.display.flip()
