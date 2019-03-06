@@ -31,6 +31,8 @@ right_upper_wall = pong_objects.Side_Wall(Vector2(1193,0))
 right_lower_wall = pong_objects.Side_Wall(Vector2(1193,575))
 left_upper_wall = pong_objects.Side_Wall(Vector2(0,0))
 left_lower_wall = pong_objects.Side_Wall(Vector2(0,575))
+right_goal = pong_objects.Goal(Vector2(1193,126),COLOR,7,450)
+left_goal = pong_objects.Goal(Vector2(0,126),COLOR,7,450)
 
 wall_sprites = pygame.sprite.Group()
 
@@ -38,17 +40,19 @@ wall_sprites.add(right_upper_wall)
 wall_sprites.add(right_lower_wall)
 wall_sprites.add(left_upper_wall)
 wall_sprites.add(left_lower_wall)
+wall_sprites.add(right_goal)
+wall_sprites.add(left_goal)
 
 wall_sprites.add(upper_wall)
 wall_sprites.add(lower_wall)
 
-ball = pong_objects.Ball(Vector2(590, 340))
+ball = pong_objects.Ball(Vector2(590, 340), (255,255,255), 20, 20, 600)
 all_sprites.add(ball)
 
 ball_reset = True
 game_start = False
 
-power_up = pong_objects.Power_Up(Vector2(random.randint(340,850),random.randint(5,695)))
+power_up = pong_objects.Power_Up(Vector2(random.randint(340,850),random.randint(5,665)))
 all_power_ups = pygame.sprite.Group()
 all_power_ups.add(power_up)
 
@@ -84,6 +88,7 @@ while not done:
             elif event.key == pygame.K_DOWN and game_start:
                 player_1_speed.y += 10
 
+
         elif event.type == pygame.KEYUP:
             if event.key == pygame.K_w:
                 player_2_speed.y = 0
@@ -110,10 +115,11 @@ while not done:
         ball_speed = Vector2(the_way,0)
         ball.speed = ball_speed
         ball_reset = False
-        random_ball_speed_y = random.randint(-10,10)
+        random_ball_speed_y = random.randint(-5,5)
         ball_speed.y = random_ball_speed_y
+        ball.owner = pong_objects.NEUTRAL
 
-    screen.fill((COLOR))
+    screen.fill((0,0,0))
     pygame.draw.line(screen, (255,255,255), (600,0),(600,700), 10)
 
     all_sprites.update()
@@ -138,7 +144,6 @@ while not done:
             can_hit = False
             (r,phi) = ball.speed.as_polar()
             phi = pong_util.new_angle1(phi,ball.speed.x,ball.rect.y,player_1.rect.centery)
-            COLOR = (random.randint(0,255), random.randint(0,255), random.randint(0,255))
             player_1_p_up = True
             player_2_p_up = False
             ball.speed.from_polar((r,phi))
@@ -150,11 +155,30 @@ while not done:
             (r,phi) = ball.speed.as_polar()
             phi = pong_util.new_angle2(phi,ball.speed.x,ball.rect.y,player_2.rect.centery)
             ball.speed.from_polar((r,phi))
-            COLOR = (random.randint(0,255), random.randint(0,255), random.randint(0,255))
             player_2_p_up = True
             player_1_p_up = False
 
-    if ball.position.x >= 1190:
+    if pygame.sprite.collide_rect(ball, upper_wall):
+        (r,phi) = ball_speed.as_polar()
+        ball_speed.from_polar((r, -phi))
+
+    elif pygame.sprite.collide_rect(ball, lower_wall):
+        (r,phi) = ball_speed.as_polar()
+        ball_speed.from_polar((r, -phi))
+
+    elif pygame.sprite.collide_rect(ball, right_lower_wall):
+        ball_speed.x = -10
+
+    elif pygame.sprite.collide_rect(ball, right_upper_wall):
+        ball_speed.x = -10
+
+    elif pygame.sprite.collide_rect(ball, left_lower_wall):
+        ball_speed.x = 10
+
+    elif pygame.sprite.collide_rect(ball, left_upper_wall):
+        ball_speed.x = 10
+
+    elif pygame.sprite.collide_rect(ball, right_goal):
         game_start = False
         ball.position = (590, 340)
         ball_speed.x = 0
@@ -165,7 +189,7 @@ while not done:
         player_2_points += 1
         the_way = 10
 
-    elif ball.position.x <= -10:
+    elif pygame.sprite.collide_rect(ball, left_goal):
         game_start = False
         ball.position = (590, 340)
         ball_speed.x = 0
@@ -176,41 +200,16 @@ while not done:
         player_1_points += 1
         the_way = -10
 
-    if pygame.sprite.collide_rect(ball, upper_wall):
-        (r,phi) = ball_speed.as_polar()
-        ball_speed.from_polar((r, -phi))
-        COLOR = (random.randint(0,255), random.randint(0,255), random.randint(0,255))
-
-    elif pygame.sprite.collide_rect(ball, lower_wall):
-        (r,phi) = ball_speed.as_polar()
-        ball_speed.from_polar((r, -phi))
-        COLOR = (random.randint(0,255), random.randint(0,255), random.randint(0,255))
-
-    elif pygame.sprite.collide_rect(ball, right_lower_wall):
-        COLOR = (random.randint(0,255), random.randint(0,255), random.randint(0,255))
-        ball_speed.x = -10
-
-    elif pygame.sprite.collide_rect(ball, right_upper_wall):
-        COLOR = (random.randint(0,255), random.randint(0,255), random.randint(0,255))
-        ball_speed.x = -10
-
-    elif pygame.sprite.collide_rect(ball, left_lower_wall):
-        COLOR = (random.randint(0,255), random.randint(0,255), random.randint(0,255))
-        ball_speed.x = 10
-
-    elif pygame.sprite.collide_rect(ball, left_upper_wall):
-        COLOR = (random.randint(0,255), random.randint(0,255), random.randint(0,255))
-        ball_speed.x = 10
-
-    elif pygame.sprite.collide_rect(ball, power_up) and player_1_p_up:
-        random_power_up = random.randint(1,2)
+    elif pygame.sprite.collide_rect(ball, power_up):
+        power_up.rect = (-100,-100, 30, 30)
         power_up.kill()
-        pygame.time.set_timer(POWER_UP_TIMER, random.randint(3,10) * 1000)
-    elif pygame.sprite.collide_rect(ball, power_up) and player_2_p_up:
-        random_power_up = random.randint(1,2)
-        power_up.kill()
-        pygame.time.set_timer(POWER_UP_TIMER, random.randint(3,10) * 1000)
-
+        random_power_up = random.randint(1,1)
+        pygame.time.set_timer(POWER_UP_TIMER, random.randint(3,15) * 1000)
+        if random_power_up == 1:
+            if player_1_p_up:
+                ball.owner = pong_objects.PLAYER1
+            elif player_2_p_up:
+                ball.owner = pong_objects.PLAYER2
 
     (r,phi) = ball.speed.as_polar()
     angle = myfont.render(str((phi)), False, (255, 255, 255))
@@ -218,7 +217,7 @@ while not done:
     player_2_points_text = myfont.render(str(player_2_points), False, (255, 255, 255))
     screen.blit(player_1_points_text, (620,20))
     screen.blit(player_2_points_text, (20,20))
-    screen.blit(angle, (430,200))
+    #screen.blit(angle, (430,200))
     #Update screen
     pygame.display.flip()
     clock.tick(60)
