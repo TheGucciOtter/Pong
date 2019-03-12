@@ -273,7 +273,7 @@ while not done:
     p1_reverse_active_text = power_up_fond.render((p1_reverse_indicator), False, (p1_reverse_indicator_color))
     p2_reverse_active_text = power_up_fond.render((p2_reverse_indicator), False, (p2_reverse_indicator_color))
     p1_invisible_active_text = power_up_fond.render((p1_invisible_indicator), False, (p1_invisible_indicator_color))
-    p2_invisible_active_text = power_up_fond.render((p2_invisible_indicator), False, (p1_invisible_indicator_color))
+    p2_invisible_active_text = power_up_fond.render((p2_invisible_indicator), False, (p2_invisible_indicator_color))
 
     screen.blit(player_1_points_text, (620,20))
     screen.blit(player_2_points_text, (20,20))
